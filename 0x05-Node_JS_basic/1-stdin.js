@@ -1,13 +1,17 @@
 // 1-stdin.js
 
-process.stdout.write('Welcome to ALX, what is your name?\n');
+process.stdin.setEncoding('utf8');
 
-process.stdin.on('data', (data) => {
-  const name = data.toString().trim();
-  console.log(`Your name is: ${name}`);
+console.log('Welcome to ALX, what is your name?');
+
+process.stdin.on('readable', () => {
+  const chunk = process.stdin.read();
+  if (chunk !== null) {
+    const name = chunk.trim();
+    console.log(`Your name is: ${name}`);
+  }
 });
 
-// This will trigger when the input stream ends (e.g., using Ctrl+D or piping input)
 process.stdin.on('end', () => {
   console.log('This important software is now closing');
 });
