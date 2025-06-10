@@ -1,5 +1,3 @@
-// 3-read_file_async.js
-
 const fs = require('fs');
 
 function countStudents(path) {
@@ -10,31 +8,23 @@ function countStudents(path) {
         return;
       }
 
-      const lines = data.split('\n').filter((line) => line.trim() !== '');
-      const students = lines.slice(1); // skip the header
-
-      console.log(`Number of students: ${students.length}`);
-
+      const lines = data.split('\n').filter(line => line.trim() !== '');
+      const students = lines.slice(1).map(line => line.split(','));
       const fields = {};
 
-      students.forEach((line) => {
-        const parts = line.split(',');
-        const firstName = parts[0];
-        const field = parts[3];
-
-        if (field && firstName) {
-          if (!fields[field]) {
-            fields[field] = [];
-          }
-          fields[field].push(firstName);
-        }
-      });
-
-      for (const [field, names] of Object.entries(fields)) {
-        console.log(`Number of students in ${field}: ${names.length}. List: ${names.join(', ')}`);
+      for (const student of students) {
+        const field = student[3];
+        const firstName = student[0];
+        if (!fields[field]) fields[field] = [];
+        fields[field].push(firstName);
       }
 
-      resolve();
+      const total = students.length;
+      const outputLines = [`Number of students: ${total}`];
+      for (const [field, names] of Object.entries(fields)) {
+        outputLines.push(`Number of students in ${field}: ${names.length}. List: ${names.join(', ')}`);
+      }
+      resolve(outputLines.join('\n'));
     });
   });
 }
