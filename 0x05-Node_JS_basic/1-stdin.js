@@ -1,18 +1,21 @@
+const process = require('process');
+
+// Display initial message
 process.stdout.write('Welcome to ALX, what is your name?\n');
 
-let isPipedInput = false;
-
-process.stdin.on('data', (data) => {
-  const name = data.toString().trim();
+// Handle user input
+process.stdin.on('data', (input) => {
+  const name = input.toString().trim();
   process.stdout.write(`Your name is: ${name}\n`);
   
-  if (isPipedInput) {
+  // Check if input is from pipe (non-interactive)
+  if (!process.stdin.isTTY) {
     process.stdout.write('This important software is now closing\n');
   }
   process.exit();
 });
 
-// Check if input is being piped
-if (!process.stdin.isTTY) {
-  isPipedInput = true;
-}
+// Handle interactive close
+process.stdin.on('end', () => {
+  process.stdout.write('This important software is now closing\n');
+});
