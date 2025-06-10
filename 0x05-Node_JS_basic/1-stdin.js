@@ -1,17 +1,18 @@
-// 1-stdin.js
+process.stdout.write('Welcome to ALX, what is your name?\n');
 
-process.stdin.setEncoding('utf8');
+let isPipedInput = false;
 
-console.log('Welcome to ALX, what is your name?');
-
-process.stdin.on('readable', () => {
-  const chunk = process.stdin.read();
-  if (chunk !== null) {
-    const name = chunk.trim();
-    console.log(`Your name is: ${name}`);
+process.stdin.on('data', (data) => {
+  const name = data.toString().trim();
+  process.stdout.write(`Your name is: ${name}\n`);
+  
+  if (isPipedInput) {
+    process.stdout.write('This important software is now closing\n');
   }
+  process.exit();
 });
 
-process.stdin.on('end', () => {
-  console.log('This important software is now closing');
-});
+// Check if input is being piped
+if (!process.stdin.isTTY) {
+  isPipedInput = true;
+}
