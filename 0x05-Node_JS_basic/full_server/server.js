@@ -1,14 +1,15 @@
 import express from 'express';
 import routes from './routes/index.js';
 
+const database = process.argv[2];
+
 const app = express();
+
+// Store database path in app locals for use in controllers
+app.locals.dbPath = database;
 
 app.use('/', routes);
 
-const port = 1245;
-app.listen(port, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Server running on port ${port}`);
-});
+app.listen(1245);
 
 export default app;
