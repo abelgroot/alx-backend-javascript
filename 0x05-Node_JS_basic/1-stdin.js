@@ -5,20 +5,17 @@ process.stdout.write('Welcome to Holberton School, what is your name?\n');
 
 process.stdin.setEncoding('utf8');
 
-let name = '';
+process.stdin.on('data', (data) => {
+  const name = data.trim();
+  console.log(`Your name is: ${name}`);
 
-process.stdin.on('data', (chunk) => {
-  name += chunk;
+  // If it's interactive mode (user typed input), exit after response
   if (process.stdin.isTTY) {
-    name = name.trim();
-    console.log(`Your name is: ${name}`);
+    process.exit(0);
   }
 });
 
 process.stdin.on('end', () => {
-  name = name.trim();
-  if (!process.stdin.isTTY) {
-    console.log(`Your name is: ${name}`);
-    console.log('This important software is now closing');
-  }
+  // This is triggered when piping input (e.g., echo "Sam" | node ...)
+  console.log('This important software is now closing');
 });
