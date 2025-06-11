@@ -1,21 +1,24 @@
-const process = require('process');
+#!/usr/bin/env node
+// Reads user name from stdin and prints a greeting
 
-// Display initial message
-process.stdout.write('Welcome to ALX, what is your name?\n');
+process.stdout.write('Welcome to Holberton School, what is your name?\n');
 
-// Handle user input
-process.stdin.on('data', (input) => {
-  const name = input.toString().trim();
-  process.stdout.write(`Your name is: ${name}\n`);
-  
-  // Check if input is from pipe (non-interactive)
-  if (!process.stdin.isTTY) {
-    process.stdout.write('This important software is now closing\n');
+process.stdin.setEncoding('utf8');
+
+let name = '';
+
+process.stdin.on('data', (chunk) => {
+  name += chunk;
+  if (process.stdin.isTTY) {
+    name = name.trim();
+    console.log(`Your name is: ${name}`);
   }
-  process.exit();
 });
 
-// Handle interactive close
 process.stdin.on('end', () => {
-  process.stdout.write('This important software is now closing\n');
+  name = name.trim();
+  if (!process.stdin.isTTY) {
+    console.log(`Your name is: ${name}`);
+    console.log('This important software is now closing');
+  }
 });
