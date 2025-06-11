@@ -8,7 +8,7 @@ const app = http.createServer((req, res) => {
 
   if (req.url === '/') {
     res.statusCode = 200;
-    res.end('Hello ALX!');
+    res.end('Hello Holberton School!');
   } else if (req.url === '/students') {
     countStudents(database)
       .then(output => {
