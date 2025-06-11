@@ -1,8 +1,7 @@
-const express = require('expres:s);
+const express = require('express');
 const fs = require('fs');
 
 const app = express();
-
 const databaseFile = process.argv[2];
 
 function countStudents(path) {
@@ -12,47 +11,47 @@ function countStudents(path) {
         reject(new Error('Cannot load the database'));
         return;
       }
+
       const lines = data.split('\n').filter((line) => line.trim() !== '');
-      // Remove header
-      const students = lines.slice(1);
+      const header = lines.shift();
+      if (!header) {
+        resolve('Number of students: 0');
+        return;
+      }
+
       const fields = {};
+      const students = lines.map((line) => line.split(','));
+
       students.forEach((student) => {
-        const parts = student.split(',');
-        if (parts.length === 4) {
-          const [firstname, , , field] = parts;
-          if (!fields[field]) {
-            fields[field] = [];
-          }
-          fields[field].push(firstname);
+        const field = student[student.length - 1];
+        if (!fields[field]) {
+          fields[field] = [];
         }
+        fields[field].push(student[0]);
       });
 
-      let result = `Number of students: ${students.length}\n`;
-      for (const field in fields) {
-        const list = fields[field].join(', ');
-        result += `Number of students in ${field}: ${fields[field].length}. List: ${list}\n`;
-      }
-      resolve(result.trim());
+      const total = students.length;
+      let output = `Number of students: ${total}`;
+      Object.entries(fields).forEach(([field, names]) => {
+        output += `\nNumber of students in ${field}: ${names.length}. List: ${names.join(', ')}`;
+      });
+
+      resolve(output);
     });
   });
 }
 
 app.get('/', (req, res) => {
-  res.type('text/plain');
   res.send('Hello Holberton School!');
 });
 
 app.get('/students', async (req, res) => {
-  res.type('text/plain');
-  if (!databaseFile) {
-    res.send('No database file specified');
-    return;
-  }
+  res.setHeader('Content-Type', 'text/plain');
   try {
-    const studentsInfo = await countStudents(databaseFile);
-    res.send(`This is the list of our students\n${studentsInfo}`);
-  } catch (error) {
-    res.send(error.message);
+    const report = await countStudents(databaseFile);
+    res.send(`This is the list of our students\n${report}`);
+  } catch (err) {
+    res.send(`This is the list of our students\n${err.message}`);
   }
 });
 
