@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require('expres:s);
 const fs = require('fs');
 
 const app = express();
@@ -39,7 +39,7 @@ function countStudents(path) {
 
 app.get('/', (req, res) => {
   res.type('text/plain');
-  res.send('Hello ALX!');
+  res.send('Hello Holberton School!');
 });
 
 app.get('/students', async (req, res) => {
