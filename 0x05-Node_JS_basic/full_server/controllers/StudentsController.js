@@ -3,10 +3,16 @@ import { readDatabase } from '../utils.js';
 export default class StudentsController {
   static async getAllStudents(req, res) {
     try {
-      const students = await readDatabase(req.app.locals.databasePath);
+      // Get path from app.locals or request time argument
+      const databasePath = req.app.locals.databasePath || 
+                         process.argv[2] || 
+                         path.join(process.cwd(), 'database.csv');
+      
+      const students = await readDatabase(databasePath);
       
       let response = 'This is the list of our students\n';
-      const fields = Object.keys(students).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+      const fields = Object.keys(students).sort((a, b) => 
+        a.localeCompare(b, undefined, { sensitivity: 'base' }));
       
       fields.forEach(field => {
         response += `Number of students in ${field}: ${students[field].length}. `;
@@ -28,7 +34,12 @@ export default class StudentsController {
     }
 
     try {
-      const students = await readDatabase(req.app.locals.databasePath);
+      // Get path from app.locals or request time argument
+      const databasePath = req.app.locals.databasePath || 
+                         process.argv[2] || 
+                         path.join(process.cwd(), 'database.csv');
+      
+      const students = await readDatabase(databasePath);
       
       if (!students[major]) {
         res.status(500).send(`No students found in ${major} major`);
