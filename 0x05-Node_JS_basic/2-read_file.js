@@ -1,35 +1,36 @@
-// 2-read_file.js
-
 const fs = require('fs');
 
+/**
+ * A function that accepts a path to a csv file that contains list of students
+ * and returns the total count of students and the count of students in each
+ * field of study.
+ * @param {string} path - path to csv file
+ */
 function countStudents(path) {
   try {
-    const data = fs.readFileSync(path, 'utf8');
-    const lines = data.split('\n').filter((line) => line.trim() !== '');
-    const students = lines.slice(1); // skip header
+    const studentData = fs.readFileSync(path, 'utf8');
+    const students = studentData
+      .split('\n')
+      .filter((student) => student.length > 0)
+      .map((student) => student.split(','));
 
-    const total = students.length;
-    console.log(`Number of students: ${total}`);
-
-    const fields = {};
-
-    students.forEach((line) => {
-      const parts = line.split(',');
-      const firstName = parts[0];
-      const field = parts[3];
-
-      if (field && firstName) {
-        if (!fields[field]) {
-          fields[field] = [];
-        }
-        fields[field].push(firstName);
-      }
+    students.shift();
+    console.log(`Number of students: ${students.length}`);
+    const filedOfStudy = {};
+    students.forEach((student) => {
+      if (!filedOfStudy[student[3]]) filedOfStudy[student[3]] = [];
+      filedOfStudy[student[3]].push(student[0]);
     });
 
-    for (const [field, names] of Object.entries(fields)) {
-      console.log(`Number of students in ${field}: ${names.length}. List: ${names.join(', ')}`);
-    }
-  } catch (err) {
+    Object.keys(filedOfStudy).forEach((key) => {
+      console.log(
+        `Number of students in ${key}: ${
+          filedOfStudy[key].length
+        }. List: ${filedOfStudy[key].join(', ')}`,
+      );
+    });
+  } catch (error) {
+    console.log(error);
     throw new Error('Cannot load the database');
   }
 }
