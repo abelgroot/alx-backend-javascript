@@ -1,38 +1,31 @@
-import fs from 'fs';
-import path from 'path';
-import { promisify } from 'util';
+const fs = require('fs');
 
-const readFileAsync = promisify(fs.readFile);
-
-export async function readDatabase(filePath) {
+async function countStudents(path) {
+  let data;
   try {
-    const absolutePath = path.resolve(filePath);
-    const data = await readFileAsync(absolutePath, 'utf8');
-    const lines = data.split('\n').filter(line => line.trim() !== '');
-    
-    if (lines.length <= 1) {
-      throw new Error('Database is empty or has only headers');
-    }
-
-    const students = {};
-    const headers = lines[0].split(',').map(h => h.trim());
-    
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',');
-      if (values.length !== headers.length) continue;
-      
-      const record = {};
-      headers.forEach((header, index) => {
-        record[header] = values[index].trim();
-      });
-      
-      const field = record.field;
-      if (!students[field]) students[field] = [];
-      students[field].push(record.firstname);
-    }
-
-    return students;
+    data = await fs.promises.readFile(path, 'utf8');
   } catch (error) {
-    throw new Error(`Cannot load the database: ${error.message}`);
+    throw new Error('Cannot load the database');
   }
+  const students = data.split('\r\n').slice(1)
+    .map((student) => student.split(','))
+    .map((student) => ({
+      firstName: student[0],
+      lastName: student[1],
+      age: student[2],
+      field: student[3],
+    }));
+    let fields = students.map(student => student.field);
+    let unique_fields = new Set(fields);
+    let students_by_field = {};
+    for (let field of unique_fields) {
+      students_by_field[field] = [];
+    }
+    for (let student of students) {
+        students_by_field[student.field].push(student.firstName);
+    }
+    console.log(students_by_field);
+    return students_by_field;
 }
+
+module.exports = countStudents;
