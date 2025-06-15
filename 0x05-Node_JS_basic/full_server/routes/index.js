@@ -1,12 +1,20 @@
-const express = require('express');
-const router = express.Router();
-
 import AppController from '../controllers/AppController';
 import StudentsController from '../controllers/StudentsController';
 
-router.get('/', (req, res) => AppController.getHomepage(req, res));
-router.get('/students', (req, res) => StudentsController.getAllStudents(req, res));
-router.get('/students/:major', (req, res) => StudentsController.getAllStudentsByMajor(req, res));
+/**
+ * Bind all routes to the app instance passed in as parameter and export the router.
+ * @param {Express} app - Express application instance.
+ * @author Alex Arévalo <https://github.com/Alexoat76>
+ */
 
-export default router;
-module.exports = router;
+const mapRoutes = (app) => {
+  // Homepage route (GET) - /
+  app.get('/', AppController.getHomepage);
+  // Get all students (GET) - /students
+  app.get('/students', StudentsController.getAllStudents);
+  // Get all students by major (GET) - /students/:major (e.g. /students/CS)
+  app.get('/students/:major', StudentsController.getAllStudentsByMajor);
+};
+
+export default mapRoutes; // Export the router to be used in the server.js file.
+module.exports = mapRoutes;
